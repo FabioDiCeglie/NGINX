@@ -74,12 +74,14 @@ The NGINX configuration (`nginx/nginx.conf`) includes:
 ## Load Balancing
 
 The application demonstrates NGINX load balancing across three Node.js servers:
-- Server 1: Port 1111
-- Server 2: Port 2222
-- Server 3: Port 3333
+- Server 1: Port 1111 (maps to container port 3000)
+- Server 2: Port 2222 (maps to container port 3000)
+- Server 3: Port 3333 (maps to container port 3000)
 
 Each request to the root path (`/`) is distributed across these servers.
 You can see which server handled your request by checking the `X-Server-ID` response header.
+
+Note: While each Node.js application runs on port 3000 inside its respective container, Docker maps these to different host ports (1111, 2222, 3333) to avoid conflicts. NGINX uses these host ports to communicate with the containers.
 
 ### Static Files
 
