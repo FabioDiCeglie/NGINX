@@ -1,0 +1,10 @@
+node_modules
+# NGINX
+*.log
+nginx/logs/*
+
+# Docker
+*.log
+docker/logs/*
+
+.DS_Store
