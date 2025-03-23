@@ -1,4 +1,4 @@
-# NGINX Load Balancer Demo
+# Nginx Load Balancer Demo
 
 A demonstration project showing NGINX load balancing across multiple Node.js servers with static file serving capabilities.
 
@@ -60,8 +60,8 @@ docker compose up -d
 
 3. Access the application:
 - Main application: http://nginx-test.local:8080
-- Fruits page: http://nginx-test.local/fruits
-- Vegetables page: http://nginx-test.local/vegetables
+- Fruits page: http://nginx-test.local:8080/fruits
+- Vegetables page: http://nginx-test.local:8080/vegetables
 
 ### NGINX Configuration
 
