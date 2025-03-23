@@ -3,10 +3,12 @@ services:
     image: nginx:latest
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/mime.types:/etc/nginx/mime.types
       - ./static:/static
+      - ./ssl:/etc/nginx/ssl
     depends_on:
       - server1
       - server2

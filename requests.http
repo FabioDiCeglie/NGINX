@@ -1,0 +1,23 @@
+### Test main domain
+GET http://nginx-test.local/health
+
+### Test API domain
+GET http://api.nginx-test.local/health
+
+### Test static routes
+GET http://nginx-test.local/fruits
+
+### Test vegetables route
+GET http://nginx-test.local/vegetables
+
+### Test carbs alias
+GET http://nginx-test.local/carbs
+
+### Test crops redirect
+GET http://nginx-test.local/crops
+
+### Test number rewrite
+GET http://nginx-test.local/number/123 
+
+### Test API domain with SSL
+GET http://api-https.nginx-test.local/health
