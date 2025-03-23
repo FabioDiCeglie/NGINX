@@ -8,3 +8,7 @@ nginx/logs/*
 docker/logs/*
 
 .DS_Store
+
+# SSL
+nginx/ssl/*
+ssl/*

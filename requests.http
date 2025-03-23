@@ -20,4 +20,4 @@ GET http://nginx-test.local/crops
 GET http://nginx-test.local/number/123 
 
 ### Test API domain with SSL
-GET http://api-https.nginx-test.local/health
+GET https://api-https.nginx-test.local/health

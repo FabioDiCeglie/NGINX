@@ -53,15 +53,34 @@ git clone <repository-url>
 cd <project-directory>
 ```
 
-2. Start the services:
+2. Configure local hosts file:
+   - On Unix/Linux/Mac: Edit `/etc/hosts`
+   - On Windows: Edit `C:\Windows\System32\drivers\etc\hosts`
+
+   Add the following entries:
+   ```
+   127.0.0.1    nginx-test.local
+   127.0.0.1    api.nginx-test.local
+   127.0.0.1    api-https.nginx-test.local
+   ```
+
+   Note: You might need administrator/sudo privileges to edit the hosts file.
+
+3. Start the services:
 ```bash
 docker compose up -d
 ```
 
-3. Access the application:
-- Main application: http://nginx-test.local:8080
-- Fruits page: http://nginx-test.local:8080/fruits
-- Vegetables page: http://nginx-test.local:8080/vegetables
+4. Access the application:
+- Main application: http://nginx-test.local
+- Fruits page: http://nginx-test.local/fruits
+- Vegetables page: http://nginx-test.local/vegetables
+
+### Testing Endpoints
+
+You can test the endpoints using the provided `requests.http` file:
+- HTTP endpoints: `http://nginx-test.local/health`
+- HTTPS endpoints: `https://api-https.nginx-test.local/health`
 
 ### NGINX Configuration
 
@@ -87,8 +106,52 @@ Note: While each Node.js application runs on port 3000 inside its respective con
 
 Static files are served from the `static/` directory. Add or modify files here to update the static content.
 
+Note: When switching between HTTP and HTTPS configurations, make sure to update your request URLs accordingly.
+
 ## Stopping the Application
 
 ```bash
 docker compose down
 ```
+
+## SSL/HTTPS Setup
+
+### Generating Self-Signed Certificates (Development Only)
+For local development with HTTPS, you'll need to generate self-signed SSL certificates:
+
+```bash
+# Create ssl directory if it doesn't exist
+mkdir -p ssl
+
+# Generate self-signed certificate and private key
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout ssl/nginx-selfsigned.key \
+  -out ssl/nginx-selfsigned.crt \
+  -subj "/C=US/ST=State/L=City/O=Organization/CN=nginx-test.local"
+```
+
+Note: Self-signed certificates will trigger browser warnings. This is expected in development. For production, use certificates from a trusted provider like Let's Encrypt.
+
+### Using HTTPS Locally
+1. Generate the SSL certificates as shown above
+2. Ensure the SSL configuration in `nginx.conf` points to the correct certificate files:
+```nginx
+ssl_certificate /etc/nginx/ssl/nginx-selfsigned.crt;
+ssl_certificate_key /etc/nginx/ssl/nginx-selfsigned.key;
+```
+3. Make sure port 443 is exposed in `docker-compose.yml`
+4. Restart the containers:
+```bash
+docker compose down
+docker compose up -d
+```
+
+You can then test HTTPS endpoints:
+```http
+https://api-https.nginx-test.local/health
+```
+
+Note: When using self-signed certificates, you may need to:
+- Accept the security warning in your browser
+- Use the `-k` flag with curl commands
+- Configure your HTTP client to accept invalid certificates
