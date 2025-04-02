@@ -62,6 +62,7 @@ cd <project-directory>
    127.0.0.1    nginx-test.local
    127.0.0.1    api.nginx-test.local
    127.0.0.1    api-https.nginx-test.local
+   127.0.0.1    api-https.nginx-test-ip-spoofing.local
    ```
 
    Note: You might need administrator/sudo privileges to edit the hosts file.
@@ -155,3 +156,52 @@ Note: When using self-signed certificates, you may need to:
 - Accept the security warning in your browser
 - Use the `-k` flag with curl commands
 - Configure your HTTP client to accept invalid certificates
+
+## IP Spoofing Protection
+
+### What is IP Spoofing?
+IP spoofing is a cyber attack where malicious actors forge their IP address to:
+- Impersonate trusted sources
+- Bypass IP-based security controls
+- Hide their true identity
+- Potentially conduct DDoS attacks
+
+For example, without protection, attackers could forge requests that appear to come from Vercel's infrastructure, potentially bypassing security measures.
+
+### Vercel Proxy Configuration
+The application includes protection against IP spoofing when using Vercel as a proxy. This is configured at:
+```http
+http://api-https.nginx-test-ip-spoofing.local
+```
+
+### Security Features
+1. **IP Restriction**
+   ```nginx
+   # Only allows traffic from Vercel's infrastructure
+   allow 76.76.21.0/24;      # Vercel IP range 1
+   allow 76.76.22.0/24;      # Vercel IP range 2
+   deny all;                 # Block all other traffic
+   ```
+
+2. **Header Protection**
+   ```nginx
+   proxy_set_header X-Real-IP $remote_addr;
+   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+   proxy_set_header Host $host;
+   ```
+
+### Testing IP Protection
+1. Add the domain to your hosts file:
+   ```
+   127.0.0.1    api-https.nginx-test-ip-spoofing.local
+   ```
+
+2. Requests will only be allowed if they originate from Vercel's IP ranges:
+   - 76.76.21.0/24
+   - 76.76.22.0/24
+
+### Security Notes
+- Keep Vercel IP ranges updated as they may change
+- Monitor access logs for potential security issues
+- Consider implementing rate limiting for additional protection
+- For production, combine with SSL/HTTPS configuration
