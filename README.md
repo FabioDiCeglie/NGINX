@@ -183,12 +183,15 @@ http://api-https.nginx-test-ip-spoofing.local
    deny all;                 # Block all other traffic
    ```
 
-2. **Header Protection**
+2. **Custom Security Header**
    ```nginx
-   proxy_set_header X-Real-IP $remote_addr;
-   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-   proxy_set_header Host $host;
+   # Simple custom header for verification
+   proxy_set_header Custom-Header-Test "VercelProxy-$remote_addr";  # Custom verification header
+   proxy_set_header Host $host;                                     # Preserve original host header
    ```
+
+The custom header approach provides several advantages:
+- Creates a unique signature that your application can verify
 
 ### Testing IP Protection
 1. Add the domain to your hosts file:
@@ -196,12 +199,19 @@ http://api-https.nginx-test-ip-spoofing.local
    127.0.0.1    api-https.nginx-test-ip-spoofing.local
    ```
 
-2. Requests will only be allowed if they originate from Vercel's IP ranges:
-   - 76.76.21.0/24
-   - 76.76.22.0/24
+2. Simulate requests from allowed IPs using:
+   ```bash
+   # Using curl with a custom header (for testing only)
+   curl -H "X-Forwarded-For: 76.76.21.123" http://api-https.nginx-test-ip-spoofing.local
+   ```
+
+3. Verify rejected requests:
+   ```bash
+   # This should be rejected
+   curl http://api-https.nginx-test-ip-spoofing.local
+   ```
 
 ### Security Notes
 - Keep Vercel IP ranges updated as they may change
 - Monitor access logs for potential security issues
-- Consider implementing rate limiting for additional protection
 - For production, combine with SSL/HTTPS configuration
